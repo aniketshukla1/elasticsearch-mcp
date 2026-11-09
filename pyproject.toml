@@ -1,0 +1,14 @@
+[project]
+name = "elasticsearch-mcp"
+version = "0.1.0"
+description = "Read-only MCP server for Elasticsearch, for any MCP client"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["mcp>=2.3,<3", "httpx2>=2.10"]
+
+[project.scripts]
+elasticsearch-mcp = "elasticsearch_mcp:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

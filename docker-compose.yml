@@ -1,0 +1,18 @@
+# Local single-node Elasticsearch for development and test_e2e.py. ES_PASSWORD comes from .env.
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.5.5
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "true"
+      xpack.security.http.ssl.enabled: "false"
+      xpack.security.transport.ssl.enabled: "false"
+      ELASTIC_PASSWORD: ${ES_PASSWORD:?set ES_PASSWORD in .env}
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    ports:
+      - "127.0.0.1:9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsu elastic:$$ELASTIC_PASSWORD 'localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s'"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
