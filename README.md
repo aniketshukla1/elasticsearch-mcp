@@ -134,10 +134,10 @@ The server also ships an MCP prompt, `elasticsearch(question)`. Clients that sup
 
 Some setups don't allow MCP servers. The skill in [`skills/elasticsearch`](skills/elasticsearch/SKILL.md) teaches the agent to run the same six tools as shell commands, or as plain `curl` calls when uv isn't installed. It follows the open [Agent Skills](https://agentskills.io) format, so one folder works in every agent that supports skills.
 
-Install it into all your agents at once with the [`skills`](https://github.com/vercel-labs/skills) installer:
+Install it for your user, in the agents you pick, with the [`skills`](https://github.com/vercel-labs/skills) installer (drop `-g` to install into the current project only):
 
 ```bash
-npx skills add aniketshukla1/elasticsearch-mcp
+npx skills add aniketshukla1/elasticsearch-mcp -g
 ```
 
 Or copy the folder into one agent's skills directory:
