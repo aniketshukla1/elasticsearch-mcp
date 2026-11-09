@@ -1,4 +1,4 @@
-"""Read-only Elasticsearch MCP server (stdio).
+"""Read-only Elasticsearch tools, served over MCP (stdio) and reused by the CLI in cli.py.
 
 Talks to the Elasticsearch REST API directly, so one build works with ES 7, 8, 9 and Elastic Cloud.
 Config comes from the environment:
@@ -120,12 +120,3 @@ def elasticsearch(question: str = "") -> str:
         "then query with esql for counts, group-bys and top-N, or with search for full-text matches and documents. "
         "Keep results small (LIMIT or size) and show the query you ran."
     )
-
-
-def main() -> None:
-    """Console entry point (`elasticsearch-mcp`): serve over stdio, which every MCP client can launch."""
-    mcp.run()
-
-
-if __name__ == "__main__":
-    main()

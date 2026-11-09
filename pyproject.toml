@@ -1,14 +1,20 @@
 [project]
 name = "elasticsearch-mcp"
 version = "0.1.0"
-description = "Read-only MCP server for Elasticsearch, for any MCP client"
+description = "Read-only Elasticsearch for AI agents: an MCP server and an Agent Skill over the same tools"
 readme = "README.md"
+license = "MIT"
+authors = [{ name = "Aniket Shukla" }]
 requires-python = ">=3.10"
 dependencies = ["mcp>=2.3,<3", "httpx2>=2.10"]
+keywords = ["elasticsearch", "mcp", "model-context-protocol", "agent-skills", "ai-agents", "esql"]
+
+[project.urls]
+Repository = "https://github.com/aniketshukla1/elasticsearch-mcp"
 
 [project.scripts]
-elasticsearch-mcp = "elasticsearch_mcp:main"
+elasticsearch-mcp = "elasticsearch_mcp.cli:main"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"

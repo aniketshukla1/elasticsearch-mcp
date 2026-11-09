@@ -1,15 +1,17 @@
-"""End-to-end check: Elasticsearch <- elasticsearch-mcp <- MCP client over stdio.
+"""End-to-end check against a real cluster, through both front ends.
 
-Seeds the demo index `mcp-demo-products` (left in place so you can query it from Claude), creates a
-1-hour read-only API key, then calls every tool once with that key and once with basic auth.
+Seeds the demo index `mcp-demo-products` (left in place so agents can query it) and creates a 1-hour
+read-only API key. Then, once with that key and once with basic auth, it calls every tool and the prompt
+over MCP (the server) and every command from the shell (the CLI that the Agent Skill uses).
 
     docker compose up -d --wait
-    uv run --env-file .env test_e2e.py
+    uv run --env-file .env tests/test_e2e.py
 """
 
 import asyncio
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -149,12 +151,44 @@ async def check(env: dict) -> None:
         ), missing.content
 
 
+def check_cli(env: dict) -> None:
+    """The Agent Skill's path: the same tools as one-shot shell commands."""
+    cli = str(Path(sys.executable).with_name("elasticsearch-mcp"))
+    base = {"PATH": os.environ["PATH"], "HOME": os.environ["HOME"], **env}
+
+    def run(*args: str, stdin: str | None = None) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [cli, *args], input=stdin, capture_output=True, text=True, env=base
+        )
+
+    def ok(*args: str, stdin: str | None = None):
+        result = run(*args, stdin=stdin)
+        assert result.returncode == 0, f"{args}: {result.stderr}"
+        return json.loads(result.stdout)
+
+    assert ok("cluster-health")["status"] in ("green", "yellow")
+    assert ok("list-indices", INDEX)[0]["docs.count"] == str(len(PRODUCTS))
+    assert "price" in ok("get-mappings", INDEX)[INDEX]["mappings"]["properties"]
+    body = json.dumps({"query": {"match": {"name": "shoes"}}})
+    assert ok("search", INDEX, "-", stdin=body)["hits"]["total"]["value"] == 2
+    esql = f"FROM {INDEX} | STATS n = COUNT(*)"
+    assert ok("esql", esql)["values"] == [[len(PRODUCTS)]]
+    assert ok("get-shards", INDEX)
+    missing = run("search", "mcp-no-such-index")
+    assert missing.returncode == 1, missing
+    assert "index_not_found_exception" in missing.stderr, missing.stderr
+
+
 def test_e2e() -> None:
     api_key = seed()
     for env in ({"ES_URL": ES_URL, "ES_API_KEY": api_key}, BASIC_AUTH):
         asyncio.run(check(env))
+        check_cli(env)
 
 
 if __name__ == "__main__":
     test_e2e()
-    print(f"e2e OK: {len(TOOLS)} tools x 2 auth modes against {ES_URL}")
+    print(
+        f"e2e OK: {len(TOOLS)} tools + prompt over MCP and {len(TOOLS)} CLI commands,"
+        f" x 2 auth modes, against {ES_URL}"
+    )

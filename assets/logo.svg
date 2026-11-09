@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title id="title">elasticsearch-mcp</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="36" fill="url(#bg)"/>
+  <circle cx="70" cy="68" r="34" fill="none" stroke="#fff" stroke-width="10"/>
+  <rect x="52" y="54" width="36" height="7" rx="3.5" fill="#fff"/>
+  <rect x="52" y="65" width="28" height="7" rx="3.5" fill="#fff" opacity=".85"/>
+  <rect x="52" y="76" width="20" height="7" rx="3.5" fill="#fff" opacity=".7"/>
+  <path d="M95 93 L122 120" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+</svg>
